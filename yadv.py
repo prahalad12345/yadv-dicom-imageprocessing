@@ -73,6 +73,6 @@ def main():
 		for medical images designed to provide users with simple experience
 		to view and analyze DICOM images..
         """)
-
+ 
 if __name__ == "__main__":
     main()

@@ -40,7 +40,7 @@ import cv2
 from plotly.tools import FigureFactory as FF
 from plotly.offline import plot,iplot
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-
+  
 
 def threedVisulaization():
     st.subheader("DICOM Operation")
