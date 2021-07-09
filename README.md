@@ -1,7 +1,5 @@
 # Welcome to YaDV (Yet another DICOM Viewer)
 
-[![Documentation Status](https://readthedocs.com/projects/streamlit-streamlit/badge/?version=latest)](https://docs.streamlit.io/en/latest/?badge=latest)
-
 **Platform to open, view, analyze, classify and enrich DICOM format images..**
 
 ## Glossary
@@ -48,7 +46,7 @@ What makes YaDV different: One stop solution for COVID Analysis DICOM format, 3D
 7. Cloud Deployed (Demo purpose deployed in Heroku)
 
 ## Installation
-YaDV is based on streamlit and streamlit can also be installed in a virtual environment on [Windows](https://github.com/streamlit/streamlit/wiki/Installing-in-a-virtual-environment#on-windows), [Mac](https://github.com/streamlit/streamlit/wiki/Installing-in-a-virtual-environment#on-mac--linux), and [Linux](https://github.com/streamlit/streamlit/wiki/Installing-in-a-virtual-environment#on-mac--linux).
+YaDV is based on streamlit and streamlit can also be installed in a virtual environment on Windows, Mac and Linux. 
 
 ```bash
 pip install streamlit
@@ -96,7 +94,6 @@ YaDV uses following 3rd party tools/libraries:
 | Plotly | https://plotly.com/ |
 | SkImage | https://scikit-image.org/ |
 | Cryptohash | https://www.cryptohash.net/ |
-| Gliffy | https://www.gliffy.com/ |
 
 ## Next Step
 1. The Value Of Interest Lookup (VOI LUT - 0028, 3010) Table Implementation
