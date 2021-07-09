@@ -106,9 +106,7 @@ def dicomProcessing():
 
     # types
     type_name = st.sidebar.selectbox("Choose DICOM operation", ["Windowing",
-                                                                "Zoom",
-																"Rotate",
-																"Overlays"])
+                                                                "Zoom",																"Rotate",															"Overlays"])
     dict={"Windowing":windowing,"Zoom":handle_zoom,"Rotate":rotation,"Overlays":overlay}
     try:
         if st.button('Export'):
