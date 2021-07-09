@@ -71,7 +71,7 @@ pip install mplot3d-dragger
 YaDV can be executed used following command:
 
 ```bash
-streamlit run yadv
+streamlit run yadv.py
 ```
 
 ## Development
