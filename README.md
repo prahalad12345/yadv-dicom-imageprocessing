@@ -33,10 +33,10 @@ What makes YaDV different: One stop solution for COVID Analysis DICOM format, 3D
 * - Workstations: Where radiologists view (“read”) the images. (YaDV)
 
 ## YaDV Architecture
-![YaDV Architecture](https://github.com/yadv-dicom-imageprocessing/images/yadvArchitecture.png)
+![YaDV Architecture](https://github.com/prahalad12345/yadv-dicom-imageprocessing/blob/d59ea81a3effaf9aedf32e620340776292bbfefa/images/yadvArchitecture.png)
 
 ## YaDV Module Structure
-![YaDV Architecture](https://github.com/yadv-dicom-imageprocessing/images/yadvModule.png)
+![YaDV Architecture](https://github.com/prahalad12345/yadv-dicom-imageprocessing/blob/d59ea81a3effaf9aedf32e620340776292bbfefa/images/yadvModule.png)
 
 ## Core Capabilities
 1. Load and View DICOM Image
@@ -77,7 +77,7 @@ streamlit run yadv.py
 ## Development
 
 ```bash
-git https://github.com/prahalad/yadv.git
+git clone https://github.com/prahalad12345/yadv-dicom-imageprocessing.git
 ```
 
 ## 3rd Party Library Dependencies 
