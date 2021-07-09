@@ -59,10 +59,10 @@ def threedVisulaization():
             if(imagelist[i].Modality!='CT'):
                 st.error('This section is for CT images')
                 return
-        imagee=getpixelhu(imagelist)
-        pixresampled,spacing = resample(imagee,imagelist,[1,1,1])
+        imagee=getPixelHounsFieldUnit(imagelist)
+        pixresampled,spacing = resampleDICOMImage(imagee,imagelist,[1,1,1])
 
-        v,f=make_mesh(pixresampled,350,2)
+        v,f=create3dMesh(pixresampled,350,2)
         dict={"Plot 3d":plt_3d,"Interactive 3d":plotly_3d}
         if type_name == "Plot 3d" :
             st.pyplot(dict[type_name](v,f))
@@ -80,7 +80,7 @@ def threedVisulaization():
         # Output expected UnboundLocalErrors.
          st.error("error")
 
-def getpixelhu(scans):
+def getPixelHounsFieldUnit(scans):
     image=np.stack([files.pixel_array for files in scans])
 
     image=image.astype(np.int16)
@@ -97,7 +97,7 @@ def getpixelhu(scans):
     
     return np.array(image , dtype=np.int16)
 
-def resample(image, scan, new_spacing=[1,1,1]):
+def resampleDICOMImage(image, scan, new_spacing=[1,1,1]):
     # Determine current pixel spacing
     spacing = np.array([scan[0].SliceThickness] + (list)(scan[0].PixelSpacing), dtype=np.float32)
     resize_factor = spacing / new_spacing
@@ -110,7 +110,7 @@ def resample(image, scan, new_spacing=[1,1,1]):
     
     return image, new_spacing
 
-def make_mesh(image, threshold=-300, step_size=1):
+def create3dMesh(image, threshold=-300, step_size=1):
     p = image.transpose(2,1,0)
     verts, faces, norm, val = measure.marching_cubes(p, threshold, step_size=step_size, allow_degenerate=True) 
     return verts, faces
