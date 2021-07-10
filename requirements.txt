@@ -9,7 +9,9 @@ Pillow==8.0.1
 plotly==5.0.0
 pydicom==2.1.2
 scikit-image==0.18.1
-streamlit==0.83.0
+streamlit==0.84.0
 streamlit-drawable-canvas==0.8.0
 torch==1.9.0
 torchvision==0.10.0
+graphviz==0.16
+

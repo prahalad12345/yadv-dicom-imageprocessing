@@ -43,10 +43,24 @@ What makes YaDV different: One stop solution for COVID Analysis DICOM format, 3D
 4. Image Classification
 5. 3D image rendering using Marching Cube
 6. Anonymize during export
-7. Cloud Deployed (Demo purpose deployed in Heroku)
+7. Cloud Deployed (Demo purpose deployed in AWS EC2 instance)
+
+## Prerequisites
+Make sure you have installed all of the following prerequisites on your development machine:
+
+* Git - [Download & Install Git](https://git-scm.com/downloads). OSX and Linux machines typically have this already installed.
+* Python - [Download & Install Python3](https://www.geeksforgeeks.org/download-and-install-python-3-latest-version/) - Minimum requirement 3.8.x
+
 
 ## Installation
 YaDV is based on streamlit and streamlit can also be installed in a virtual environment on Windows, Mac and Linux. 
+
+```bash
+pip install -r requirement.txt
+```
+
+[OR]
+
 
 ```bash
 pip install streamlit
@@ -63,6 +77,8 @@ pip install skimage
 pip install matplotlib
 pip install plotly
 pip install mplot3d-dragger
+pip install graphviz
+pip install scikit-image
 ```
 
 ## Running YaDV
@@ -115,6 +131,13 @@ YaDV uses following 3rd party tools/libraries:
 | FAST.AI for Medical Image Processing | https://docs.fast.ai/medical.imaging |
 | User Interface for Image Viewer | https://streamlit.io/ |
 | Heroku Deployment | https://towardsdatascience.com/deploying-a-basic-streamlit-app-to-heroku-be25a527fcb3 |
+| AWS Deployment | https://towardsdatascience.com/how-to-deploy-a-streamlit-app-using-an-amazon-free-ec2-instance-416a41f69dc3|
+
+## FAQ
+1.  If you get "ImportError: libGL.so.1: cannot open shared object file" error message install following package:
+    ```bash
+    sudo apt install libgl1-mesa-glx
+    ```
 
 ## License
 
