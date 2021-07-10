@@ -45,11 +45,16 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from streamlit import uploaded_file_manager
 
 def covidDetector():
+    '''
+        The model detect whether he is infected with covid or not
+        The difference between the covid and non covid patients:
+        covid frontal lungs are swollen due to the excess mucus secretion 
+        this factor is used to train the models using fast.ai
+    '''
     st.subheader("COVID Detector")
     uploaded_file = st.file_uploader("Upload a front lung scan image ")
     #filee=uploaded_file
     if uploaded_file:
-        print(type(uploaded_file.type))
         if uploaded_file.type == 'application/dicom' or uploaded_file.type=='application/octet-stream':
             file_bytes = dicom.read_file(uploaded_file)
             img = file_bytes.pixel_array

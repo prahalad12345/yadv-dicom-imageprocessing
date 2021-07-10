@@ -40,22 +40,30 @@ import cv2
 from plotly.tools import FigureFactory as FF
 from plotly.offline import plot,iplot
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-  
+
 
 def threedVisulaization():
+
+    '''
+        3d visualization is a function only accesible to CT images , because CT image have specification of z axis which helps in plotting in 3d
+        This helps in viewing the CT images in 3D which help in finding the dislocation and error in the bone structure more effectively
+        The implementation is done using the marching cube algorithm though slow works well
+    '''
+
     st.subheader("DICOM Operation")
     uploaded_file = st.file_uploader("Upload a DICOM image file",accept_multiple_files=True)
     if uploaded_file:
         st.subheader("DICOM Image List:")
         imagelist = load_file(uploaded_file)
-        count=0
-        
     type_name = st.sidebar.selectbox("Choose DICOM operation", ["Plot 3d","Interactive 3d"])
 
     st.set_option('deprecation.showPyplotGlobalUse', False)
     
     try:
         for i in range(len(imagelist)):
+            '''
+                check if the list of images selected has only CT images
+            '''
             if(imagelist[i].Modality!='CT'):
                 st.error('This section is for CT images')
                 return
@@ -81,6 +89,11 @@ def threedVisulaization():
          st.error("error")
 
 def getPixelHounsFieldUnit(scans):
+    '''
+        Hounsfield Units is the relative density of the material with respect to water
+        the data in different CT scan is stored in a different format .
+        To make it uniform globally a slope and intercept is present in every image which on equating with the image produce a value which is constant to all Modality
+    '''
     image=np.stack([files.pixel_array for files in scans])
 
     image=image.astype(np.int16)
@@ -98,6 +111,12 @@ def getPixelHounsFieldUnit(scans):
     return np.array(image , dtype=np.int16)
 
 def resampleDICOMImage(image, scan, new_spacing=[1,1,1]):
+    '''
+        The slice thickness is relative to the first image and second image
+        pixel spacing provides the physical distance of spacing between the center of each pixel
+        to provide spacing between the two images resampling is required and a matching plot with the image
+        
+    '''
     # Determine current pixel spacing
     spacing = np.array([scan[0].SliceThickness] + (list)(scan[0].PixelSpacing), dtype=np.float32)
     resize_factor = spacing / new_spacing
@@ -111,10 +130,16 @@ def resampleDICOMImage(image, scan, new_spacing=[1,1,1]):
     return image, new_spacing
 
 def create3dMesh(image, threshold=-300, step_size=1):
+    '''
+        this function creates the 3d meesh for the data of image given to this function
+    '''
     p = image.transpose(2,1,0)
     verts, faces, norm, val = measure.marching_cubes(p, threshold, step_size=step_size, allow_degenerate=True) 
     return verts, faces
-
+'''
+    plotly_3d and plt_3d are the two different approach to plot with the mesh
+    plotly_3d is works better than plt_3d 
+'''
 def plotly_3d(verts, faces):
     x,y,z = zip(*verts) 
     
@@ -148,6 +173,9 @@ def plt_3d(verts, faces):
     ax.set_facecolor((0.7, 0.7, 0.7))
 	
 def load_file(path):
+    '''
+        this function reads the file and adds the slice thickness to estimate the thickness of the respective image
+    '''
     images=[dicom.read_file(files) for files in (path)]
     if(images[0].Modality!='CT'):
         return images

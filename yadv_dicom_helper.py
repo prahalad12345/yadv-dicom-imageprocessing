@@ -48,36 +48,15 @@ from streamlit_drawable_canvas import st_canvas
 from PIL import Image,ImageOps
 from pydicom.pixel_data_handlers.numpy_handler import pack_bits
 
-def load_file(path):
-    images=[dicom.read_file(files) for files in (path)]
-    
-    images.sort(key=lambda x:int(x.InstanceNumber))
-    slicethickness=np.abs(images[0].ImagePositionPatient[2]-images[1].ImagePositionPatient[2])
-    for files in images:
-        files.SliceThickness=slicethickness
-    return images
-
-
-def getPixelHounsFieldUnit(scans):
-    image=np.stack([files.pixel_array for files in scans])
-
-    image=image.astype(np.int16)
-    
-    image[image==-2000] = 0
-    
-    intercept=scans[0].RescaleIntercept
-    slope=scans[0].RescaleSlope
-    
-    if slope != 1:
-        image=slope*image.astype(np.float64)
-        image=image.astype(np.int16)
-    image+=np.int16(intercept)
-    
-    return np.array(image , dtype=np.int16)
-
-
-
 def dicomProcessing():
+    '''
+        This function helps physician to work with a single dicom image effectively
+        This funciton has 4 subfunciton
+        1)Windowing
+        2)zoom
+        3)rotating the image
+        4)overlay section
+    '''
     st.subheader("DICOM Operation")
     uploaded_file = st.file_uploader("Upload a DICOM image file", type=[".dcm"])
     col1, col2 = st.beta_columns(2)
@@ -90,12 +69,17 @@ def dicomProcessing():
         col1.image(image)
         df = create_table(file_bytes)
         st.write(df)
+        #this code below allow to plot graph on streamlit without warning message
         st.set_option('deprecation.showPyplotGlobalUse', False)
         if(file_bytes.Modality=='CT'):
             imagetoplot=gethu(file_bytes)
             leftcol,rightcol = st.beta_columns(2)
-            leftcol.pyplot(hounsfieldunitgraphh(imagetoplot))
-            rightcol.write(hudataframe())
+            leftcol.pyplot(generateHounsFieldUnitGraph(imagetoplot))
+            rightcol.write(getHounsFieldUnitDataFrame())
+        '''
+            To add overlay the location on  the dicom file(0x60000x3000) should have some data in it otherwise the Overlay section will not be accepted
+            To obtain the overlay first check if overlay section exist if there is an error a numpy array of zero is converted to bits and stored at that respective location
+        '''
         try:
             elem=file_bytes[0x6000, 0x3000]
         except:
@@ -106,10 +90,13 @@ def dicomProcessing():
 
     # types
     type_name = st.sidebar.selectbox("Choose DICOM operation", ["Windowing",
-                                                                "Zoom",																"Rotate",															"Overlays"])
-    dict={"Windowing":windowing,"Zoom":handle_zoom,"Rotate":rotation,"Overlays":overlay}
+                                                                "Zoom",
+																"Rotate",
+																"Overlays"])
+    dict={"Windowing":handle_windowing,"Zoom":handle_zoom,"Rotate":handle_rotation,"Overlays":handle_overlay}
     try:
         if st.button('Export'):
+            #if you want to save that dicom file (This option doesnt save your overlay diom file)
             exportbutton(file_bytes)
         if type_name == "Zoom" or type_name=="Rotate": 
             col2.subheader(type_name)	
@@ -123,6 +110,7 @@ def dicomProcessing():
             col2.subheader(type_name)
             file=dict['Overlays'](file_bytes,image)
             col2.image(file)
+            #on clicking on the button the image with overlay is exported
             if(st.sidebar.button('Export Overlay image')):
                 exportoverlay(file_bytes,file)
         else:
@@ -135,6 +123,11 @@ def dicomProcessing():
         st.error(exception, False)	
     
 def handle_zoom(image):		
+    '''
+        Zooming is an important option in  a dicom viewer 
+        It allows the physician to view the error in the scan in a greater view
+        if the value goes less than zero it zoom out else it zoom in
+    '''
     try:
         zoomslider = st.sidebar.slider('Zoom In/Out', -9, 15,0)
         if(zoomslider<0):
@@ -154,7 +147,11 @@ def handle_zoom(image):
         # Output unexpected Exceptions.
         st.error(exception, False)
 	
-def rotation(image):
+def handle_rotation(image):
+    '''
+        rotation is used when a physician wants to view an image with a beter angle for clarity
+        this is done using opencv warpAffine function . The matrice give information about the angle of rotation to the respective image and the center of rotation
+    '''
     rotateslider = st.sidebar.slider('Angle of rotation', 0,359)
     centerX=(image.shape[0])/2
     centerY=(image.shape[1])/2
@@ -173,7 +170,12 @@ def rotation(image):
     return result
 
 
-def windowing(img):
+def handle_windowing(img):
+    '''
+        Windowing is used to view the image based on the respective hounsfield unit interval 
+        This helps physicians to view only the parts of the scan which is a matter of concern and ignoring the rest
+        most of the positive value window is occupied by the bone
+    '''
     hu1slider = st.sidebar.slider('Minimum HU value', -1000,2999)
     hu2slider = st.sidebar.slider('Maximum HU value', -1000,3000)
 
@@ -183,6 +185,9 @@ def windowing(img):
     return finalimage
 		
 def create_table(ds):
+    '''
+        This is just an info table about the dicom file
+    '''
     flag=0
     for i in ds.keys():
         flag=i
@@ -208,6 +213,7 @@ def create_table(ds):
     return df
 
 def gethu(dicomfile):
+    #obtain the hounsfield unit
     im=dicomfile.pixel_array
     im=im.astype(np.int16)
     im[im==-2000] = 0
@@ -220,22 +226,16 @@ def gethu(dicomfile):
     im+=np.int16(intercept)
     
     return im
-
-def hounsfieldunitgraph(image):
-    im=image.astype(np.float64)
-    plt.hist(im.flatten(),bins=40,color='c')
-    plt.xlabel('Hounsfield unit')
-    plt.ylabel=('frequency')
-    fig=plt.figure()
-    return fig    
  
-def hounsfieldunitgraphh(image):
+def generateHounsFieldUnitGraph(image):
+    #plotting the hounsfield unit in a histogram plot
     im=image.astype(np.float64)
     plt.hist(im.flatten(),bins=40,color='c')
     plt.xlabel('Hounsfield unit')
     plt.ylabel=('frequency') 
 
-def hudataframe():
+def getHounsFieldUnitDataFrame():
+    #this is a static function which prints the window of hounsfield unit
     hulist=[['Air','-1000'],['Lung','-500'],['Fat','-100 to -50'],['Water','0'],['CSF','15'],['Kidney','30'],['Blood','30 to 45'],['Muscle','10 to 40'],['whitematter','20 to 30'],['greymatter','37 to 45'],['Liver','40 to 60'],['Softtissue','100 to 300'],['Bone','700 (cancellous bone) to 3000 (cortical bone']]
     df=pd.DataFrame(hulist,columns=['Substance','HU value'])
     return df
@@ -276,11 +276,18 @@ def get_first_of_dicom_field_as_int(x):
 
 
 def get_windowing(data):
+    #obtains the rescale intercept and rescale slope from the dicom file
     dicom_fields = [ data.RescaleIntercept,
                     data.RescaleSlope]
     return [get_first_of_dicom_field_as_int(x) for x in dicom_fields]
 
 def exportbutton(file):
+    '''
+        The SHA (Secure Hash Algorithm) is one of a number of cryptographic hash functions .A cryptographic hash is like a signature for a data set.
+        one of hasing algorith to encrypt data . The California Consumer Privacy Act of 2018 provides control over personal information that buisnesses 
+        collect about them .Voilation of this act has hefty fine amount.
+        After encryption the file is save in the  Exportfile folder
+    '''
     file.PatientName=sha256(file.PatientName)
     file.PatientSex=sha256(file.PatientSex)
     file.save_as('Exportfile/'+(str)(file.PatientName)+'-'+(str)(file.InstanceNumber) + ".dcm")
@@ -288,7 +295,12 @@ def exportbutton(file):
 
     return
 
-def overlay(ds,image):
+def handle_overlay(ds,image):
+
+    '''
+        overlays are an important feature in  a dicom viewer .This helps the physician to draw on the image and helps in pointing out excessive growth ,inflammation .etc
+        (Use only  white color for drawing) 
+    '''
     stroke_width = st.sidebar.slider("Stroke width: ", 1, 25, 3)
     stroke_color = st.sidebar.color_picker("Stroke color hex: ",'#ffffff')
     bg_color = st.sidebar.color_picker("Background color hex: ", "#000000")
@@ -339,6 +351,7 @@ def overlay(ds,image):
     return imagefinal
 
 def exportoverlay(file,image):
+    #function stores the image after overlay 
     name=sha256(file.PatientName)
     cv2.imwrite('overlayimage/'+(str)(name)+'-'+(str)(file.InstanceNumber)+".jpg",image)
     st.success("file saved")

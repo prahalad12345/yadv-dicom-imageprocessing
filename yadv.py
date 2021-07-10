@@ -49,7 +49,7 @@ from PIL import Image
 def main():
     # YaDV Application setup
     st.header("YaDV - Yet Another DICOM Viewer")
-    icon = Image.open('./images/YADV.png')
+    icon = Image.open('images/YADV.png')
     st.sidebar.image(icon, caption="Yet another DICOM Viewer")
     st.sidebar.title("YaDV - Options")
 	
@@ -73,6 +73,6 @@ def main():
 		for medical images designed to provide users with simple experience
 		to view and analyze DICOM images..
         """)
- 
+
 if __name__ == "__main__":
     main()

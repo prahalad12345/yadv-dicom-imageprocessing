@@ -49,8 +49,18 @@ from PIL import Image,ImageOps
 from pydicom.pixel_data_handlers.numpy_handler import pack_bits
 
 def multipleDicom():
+
+    '''
+
+        multiple dicom function helps the physician to view multiple image at once 
+        This option is required when there is a requirement of working with multiple images at once
+        There are two ways of viewing : 1)viewing each image using a slider
+                                        2)viewing all images at once
+
+    '''
+
     st.subheader("DICOM Operation")
-    uploaded_file = st.file_uploader("Upload a DICOM image file",accept_multiple_files=True)
+    uploaded_file = st.file_uploader("Upload a DICOM image file",accept_multiple_files=True , type=[".dcm"])
 
     if uploaded_file:
         st.subheader("DICOM Image List:")
@@ -60,13 +70,23 @@ def multipleDicom():
                                                                 "Multiple Image At Once"])
     try:
         if(len(image)==1 or len(image)==0):
+            '''
+                if there is only 1 image or no images then this error message is printed .
+                if this codeblock doesnt exist and ugly exception message is printed
+            '''
             st.error("expected more than 1 image")
         else:
                 if type_name == "Slide Images": 
+                    '''
+                        execution of the 1) option from the above docstring
+                    '''
                     st.subheader("Slide Images")	
                     res=slideimage(image)
                     st.image(res)
                 elif type_name == "Multiple Image At Once":
+                    '''
+                        execution of the 2) option from the above docstring
+                    '''
                     col1,col2,col3=st.beta_columns(3)
                     for i in range(len(image)):
                         if(i%3==0):
@@ -76,15 +96,24 @@ def multipleDicom():
                         if(i%3==2):
                             col3.image(image[i])
                 else:
+                    '''
+                        this is an optional block since there is bounding of  two options to choose
+                    '''
                     st.info("Choose right option")	
     except UnboundLocalError as error:
-            # Output expected UnboundLocalErrors.
+        '''
+            Output expected UnboundLocalErrors.
+            handling the error when there is no dicom file present in the upload section
+        '''
         st.error(error)
     except Exception as exception:
-            # Output unexpected Exceptions.
+        # Output unexpected Exceptions.
         st.error(exception, False)	
 		
 def slideimage(images):
+    '''
+        displaying the image at that respective index which the slider is pointing to 
+    '''
     if(len(images)==1):
         st.error('require more than 1 image')
         return 0
@@ -94,9 +123,13 @@ def slideimage(images):
         return images[imageslider-1]
 
 def load_scan(path):
+
+    '''
+        This function collects the image from the dicom file
+        The image is also sorted based on its InstanceNumber
+    '''
+
     files=[dicom.read_file(dicomfile) for dicomfile in path]
-    
-    
     files.sort(key=lambda x:int(x.InstanceNumber))
     images=[]
     for im in files:
