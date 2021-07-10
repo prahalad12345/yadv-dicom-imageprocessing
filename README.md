@@ -85,6 +85,9 @@ pip install scikit-image
 YaDV can be executed used following command:
 
 ```bash
+cd yadv-dicom-imageprocessing
+mkdir overlayimage
+mkdir Exportfile
 streamlit run yadv.py
 ```
 
