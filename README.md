@@ -19,7 +19,7 @@ YaDV is a web-based DICOM Viewer for PACS enables Radiologist to diagnoses, view
 * YaDV is an DICOM viewer greatly facilitates the day-to-day of cardiologists, traumatologist, oncologists, etc. and most importantly, it improves the healthcare and service to patients.
 * YaDV support different image processing abilities and advanced functions. Besides image visualisation YaDV can take measurements and convert images to other formats.
 * YaDV provides 3D image viewing for the surgical planning
-What makes YaDV different: One stop solution for COVID Analysis DICOM format, 3D object view, Image Classification and in future will add hand gesture based DICOM image processing
+What makes YaDV different: One stop solution for COVID Analysis DICOM format, 3D object view, Image Classification and in future will add hand gesture based DICOM image processing.
 
 ## DICOM Overview
 * DICOM stands for Digital Imaging and COmmunications in Medicine – an universal standard for Digital Imaging.
